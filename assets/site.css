@@ -12,3 +12,33 @@
 .consultation-button{display:inline-block;color:#fff;background:#111;padding:12px 24px;text-decoration:none;border:1px solid #afcece;border-radius:4px;font-weight:700}
 .consultation-button:focus-visible{outline:3px solid white;outline-offset:4px}
 @media(max-width:767px){.mission-row{grid-template-columns:1fr;gap:0;padding:16px}.mission-logo{padding:12px}.home-consultation h2{font-size:21px}}
+/* Compact desktop composition uses the viewport below the browser toolbar. */
+@media(min-width:1024px){
+.home-page .launch-nav{padding:2px 16px}
+.home-page [data-aid="HEADER_SECTION"]{padding:12px 0!important}
+.home-page #home-tagline{padding:12px 0!important}
+.home-page #home-tagline h3{margin:0!important;font-size:28px!important}
+.home-page .mission-row{padding:8px 24px;gap:20px}
+.home-page .mission-row [data-ux="SectionSplit"]{padding:8px 0!important}
+.home-page .mission-row [data-ux="ContentBasic"]{gap:12px!important}
+.home-page .mission-logo{padding:8px}
+.home-page .mission-logo img{width:210px}
+.home-page .home-consultation{padding:14px 20px}
+.home-page .home-consultation h2{margin-bottom:10px;font-size:22px}
+.home-page .home-consultation p{margin-top:8px}
+.home-page .widget-footer section{padding:14px 0!important}
+.home-page .widget-footer [data-ux="FooterDetails"]{margin:0!important}
+}
+
+@media(min-width:1024px){
+.home-page [data-aid="HEADER_SECTION"] [data-ux="Container"]{margin-top:0!important;margin-bottom:0!important}
+.home-page [data-aid="HEADER_SECTION"]>[data-ux="Block"]{margin-bottom:0!important}
+.home-page #home-tagline [data-ux="Block"]{padding-top:0!important;padding-bottom:0!important}
+.home-page .mission-row [data-ux="ContentText"]{margin-bottom:8px!important}
+.home-page .widget-footer [data-ux="Divider"]{padding-top:0!important;padding-bottom:0!important}
+.home-page .widget-footer hr{margin-top:0!important;margin-bottom:0!important}
+}
+.home-page .mission-row [data-ux="ContentBasic"]{align-items:flex-start;text-align:left}
+.home-page .mission-row [data-ux="ContentText"],.home-page .mission-row [data-ux="ContentHeading"]{text-align:left}
+@media(min-width:1024px){.home-page [data-ux="Block"][style*="min-height: 100vh"],.home-page [data-ux="Block"][style*="min-height:100vh"]{min-height:0!important}}
+@media(min-width:1024px){.home-page .page-inner{min-height:0!important}}
