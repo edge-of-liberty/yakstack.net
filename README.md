@@ -1,27 +1,21 @@
-# YakStack GitHub Pages replacement
+# YakStack GitHub Pages website
 
-Existing captured homepage content, layout, images and fonts are preserved locally.
-GoDaddy runtime scripts, account menus and cookie banner were removed. Consultation
-buttons lead to consultation/index.html, a branded email-request fallback using the
-existing public contact address. No reservation is confirmed and no payment is taken.
-The booking API currently offers health only, so no availability UI is implied.
+Live at https://yakstack.net/. Existing homepage content, design, local fonts, logo and images
+are preserved. No GoDaddy runtime or booking widgets. DNS and email configuration are unchanged.
 
-Publish: commit/push static files to main using the existing Pages setup. Relative
-links work at /yakstack.net/ and at the eventual custom-domain root. No build needed.
-The original local index.godaddy.html is excluded from Git; do not publish backups.
+The consultation page connects to the existing BCF API for genuine availability when configured.
+Checkout is currently disabled; the email fallback is nancy@yakstack.net. Private Stripe test
+checkout is supported when the backend prerequisites are enabled; it is clearly labelled and
+requires a private test code. No production payment flow is enabled. Payment redirects cannot
+confirm appointments: status comes from the API using a private per-booking capability stored in
+the originating browser tab. Calendar IDs, credentials and backend configuration stay private.
 
-Launch checklist (requires Nancy's explicit cutover approval):
-1. Nancy checks https://edge-of-liberty.github.io/yakstack.net/ on desktop/phone,
-   follows both consultation buttons, and sends a real test request to verify delivery.
-2. CNAME was independently added on GitHub as yakstack.net and is preserved.
-   Confirm Pages custom-domain settings before approved cutover. The github.io
-   preview may redirect to the current custom domain; local tests do not prove
-   the replacement is being served there yet.
-3. Update apex DNS to GitHub Pages' documented A records and www CNAME to
-   edge-of-liberty.github.io. Preserve mail/TXT records. Do not change DNS beforehand.
-4. Once GitHub provisions the custom-domain certificate, enable Enforce HTTPS and
-   verify apex/www redirects, images and request links. Nancy handles publication
-   waiting/propagation checks. Custom-domain HTTPS cannot yet be verified.
-5. Only after acceptance, retire Website Builder hosting; keep domain/email services.
+Publish: commit/push main using existing GitHub Pages setup. No build or new framework. Relative
+asset/navigation links work under a project path and the custom domain. No publication polling
+required; Nancy can check the resulting page after GitHub publishes it. Original GoDaddy HTML,
+backups, and migration files must remain excluded from Git/publication.
 
-No DNS, account or subscription changes are included in this commit.
+Local browser test (requires already installed Python Playwright and Chrome):
+`python tests/booking_ui.py`. It uses mocked API responses, checks desktop/mobile flow and offline
+fallback, and never sends payments or calendar requests. `node --check assets/booking.js` checks
+syntax. Backend tests and prerequisites live in bcf-platform/docs/booking-launch.md.
