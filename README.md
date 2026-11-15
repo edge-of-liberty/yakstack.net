@@ -19,3 +19,19 @@ Local browser test (requires already installed Python Playwright and Chrome):
 `python tests/booking_ui.py`. It uses mocked API responses, checks desktop/mobile flow and offline
 fallback, and never sends payments or calendar requests. `node --check assets/booking.js` checks
 syntax. Backend tests and prerequisites live in bcf-platform/docs/booking-launch.md.
+
+
+### Consultation display configuration
+
+The single homepage consultation link opens the existing BCF booking client at
+`/consultation/`. Availability and checkout remain controlled by the API; an email
+request is always available when booking is disabled. No times or staff are selected
+by the website. Stripe remains private test checkout only.
+
+After publishing Booking Management changes in the sibling `bcf-platform` repository,
+run `python3 tools/sync_consultation.py` to refresh the public display snapshot and
+static price labels. The consultation page also reads current API metadata before
+showing availability. The snapshot contains no staff or calendar identifiers.
+
+Local UI validation: run `tests/booking_ui.py` using the existing migration Python
+virtual environment with Playwright. It mocks the API and never charges or books.

@@ -19,7 +19,7 @@ try:
             page.on('pageerror',lambda e:errors.append(str(e)))
             def route(r):
                 path=r.request.url.split(api)[-1]
-                if path=='/v1/config': data={'availability':True,'checkout':True,'mode':'test'}
+                if path=='/v1/config': data={'availability':True,'checkout':True,'mode':'test','durationMinutes':45,'amountMinor':12345,'currency':'usd','timeZone':'America/Chicago','name':'Configured consultation'}
                 elif path.startswith('/v1/availability'): data={'slots':[{'start':test_date+'T15:00:00.000Z','end':test_date+'T16:00:00.000Z'}]}
                 elif path=='/v1/bookings':
                     body=r.request.post_data_json
@@ -31,6 +31,7 @@ try:
             page.route(api+'/**',route)
             page.route('https://checkout.stripe.com/**',lambda r:r.fulfill(body='Mock Stripe test checkout'))
             page.goto(url)
+            page.wait_for_function("document.querySelector('[data-consultation-price]').textContent.includes('$123.45')")
             page.locator('#slot-form').wait_for(state='visible')
             page.locator('#booking-date').fill(test_date)
             page.get_by_role('button',name='Find available times').click()
@@ -43,6 +44,17 @@ try:
             page.wait_for_url('https://checkout.stripe.com/test')
             assert not errors,errors
             page.close()
+        for width,height in [(1440,900),(768,1024),(390,844)]:
+            home=browser.new_page(viewport={'width':width,'height':height})
+            home.goto(url.replace('/consultation/','/'))
+            home.wait_for_function("document.querySelector('[data-consultation-price]').textContent.includes('$100')")
+            assert home.get_by_role('link',name='Book a Consultation',exact=True).count()==1
+            assert home.locator('h1').inner_text()=="Shaving yaks so you don't have to."
+            assert home.locator('nav a').all_text_contents()==['Services','About','Contact']
+            assert home.evaluate('document.documentElement.scrollWidth <= innerWidth')
+            assert home.locator('img').evaluate_all('(imgs)=>imgs.every(i=>i.complete && i.naturalWidth>0)')
+            if width>950: assert 300<=home.locator('.hero').bounding_box()['height']<=350
+            home.close()
         page=browser.new_page()
         page.route(api+'/**',lambda r:r.abort())
         page.goto(url)

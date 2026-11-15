@@ -1,0 +1,10 @@
+{
+  "name": "Initial Consultation",
+  "durationMinutes": 60,
+  "amountMinor": 10000,
+  "currency": "usd",
+  "paymentRequired": true,
+  "business": "yakstack",
+  "service": "consulting",
+  "timeZone": "America/Chicago"
+}
