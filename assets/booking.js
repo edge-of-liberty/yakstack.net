@@ -58,7 +58,7 @@
    key=key||Array.from(crypto.getRandomValues(new Uint8Array(32)),x=>x.toString(16).padStart(2,'0')).join('');
    // Save the capability BEFORE creating a hold; losing it must not create an inaccessible checkout.
    if(!storage.set('booking-pending-key',key))throw new Error('This browser is blocking session storage. Please enable it or email Nancy.');
-   const b=await call('/v1/bookings',{method:'POST',headers:{'Content-Type':'application/json','X-Booking-Test-Key':$('test-key').value},body:JSON.stringify({business:config.business,service:config.service,date:requestDate,start:selected.start,key,customer:{name:$('customer-name').value,email:$('customer-email').value}})});
+   const b=await call('/v1/bookings',{method:'POST',headers:{'Content-Type':'application/json',...(config.testAccessRequired!==false?{'X-Booking-Test-Key':$('test-key').value}:{})},body:JSON.stringify({business:config.business,service:config.service,date:requestDate,start:selected.start,key,customer:{name:$('customer-name').value,email:$('customer-email').value}})});
    if(!storage.set('booking:'+b.id,key))throw new Error('Unable to save your booking reference. Please email Nancy before continuing.');
    if(b.checkoutUrl && new URL(b.checkoutUrl).origin==='https://checkout.stripe.com')location.assign(b.checkoutUrl);else showStatus(b);
   }catch(e){message(e.message);}finally{$('checkout').disabled=false;}
@@ -70,9 +70,11 @@
   if(booking&&/^[a-f0-9]{64}$/.test(booking))await status();
   try{config={...config,...await call('/v1/config')};
    format=new Intl.DateTimeFormat('en-US',{timeZone:config.timeZone,dateStyle:'full',timeStyle:'short'});
+   $('private-access').hidden=config.testAccessRequired===false;
+   $('test-key').required=config.testAccessRequired!==false;
    $('service-title').textContent=config.name;
    document.querySelector('[data-consultation-price]').textContent=window.consultationPrice(config);
    $('checkout').textContent='Continue to Stripe test checkout — '+window.consultationPrice(config);
-   $('time-zone').textContent='Times are shown in '+config.timeZone+'.';$('slot-form').hidden=!config.availability;if(config.availability&&!booking)message(config.checkout?'Private test booking is available. No real charges will be made.':'Check available times, then email Nancy to arrange your consultation. Online checkout is not enabled.');}catch{ /* The static email fallback remains usable without the API. */ }
+   $('time-zone').textContent='Times are shown in '+config.timeZone+'.';$('slot-form').hidden=!config.availability;if(config.availability&&!booking)message(config.checkout?'Book a real appointment using a simulated Stripe payment. No real money will be charged.':'Check available times, then email Nancy to arrange your consultation. Online checkout is not enabled.');}catch{ /* The static email fallback remains usable without the API. */ }
  })().catch(()=>message('Online booking is unavailable right now. Please email Nancy below.'));
 })();

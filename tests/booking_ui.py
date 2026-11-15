@@ -19,12 +19,13 @@ try:
             page.on('pageerror',lambda e:errors.append(str(e)))
             def route(r):
                 path=r.request.url.split(api)[-1]
-                if path=='/v1/config': data={'availability':True,'checkout':True,'mode':'test','durationMinutes':45,'amountMinor':12345,'currency':'usd','timeZone':'America/Chicago','name':'Configured consultation'}
+                if path=='/v1/config': data={'availability':True,'checkout':True,'testAccessRequired':width==1440,'mode':'test','durationMinutes':45,'amountMinor':12345,'currency':'usd','timeZone':'America/Chicago','name':'Configured consultation'}
                 elif path.startswith('/v1/availability'): data={'slots':[{'start':test_date+'T15:00:00.000Z','end':test_date+'T16:00:00.000Z'}]}
                 elif path=='/v1/bookings':
                     body=r.request.post_data_json
                     assert body['customer']['email']=='test@example.com'
-                    assert len(body['key'])==64 and r.request.headers['x-booking-test-key']=='private-test'
+                    assert len(body['key'])==64
+                    assert (r.request.headers.get('x-booking-test-key')=='private-test') == (width==1440)
                     data={'id':'a'*64,'state':'checkout','checkoutUrl':'https://checkout.stripe.com/test'}
                 else: raise AssertionError(path)
                 r.fulfill(status=200,content_type='application/json',body=json.dumps(data))
@@ -38,7 +39,8 @@ try:
             page.locator('#slot-options button').click()
             page.locator('#customer-name').fill('Test Customer')
             page.locator('#customer-email').fill('test@example.com')
-            page.locator('#test-key').fill('private-test')
+            if width==1440: page.locator('#test-key').fill('private-test')
+            else: assert page.locator('#private-access').is_hidden()
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
             page.locator('#checkout').click()
             page.wait_for_url('https://checkout.stripe.com/test')
