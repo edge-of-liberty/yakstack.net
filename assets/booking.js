@@ -15,7 +15,8 @@
  }
  function showStatus(b) {
   const when=format.format(new Date(b.start))+' '+config.timeZone+'.';
-  const text={confirmed:'Test appointment confirmed: '+when+' This was a Stripe test payment, not a real charge.',paid_pending_calendar:'Your test payment was received. Calendar setup is still pending; the appointment is not yet confirmed.',refund_pending:'This appointment could not be completed. The test payment is being refunded.',refunded:'The test payment has been refunded. This appointment is not booked.',expired:'This unpaid checkout expired. Choose a new time or email Nancy.',cancelled:'This appointment is canceled.',checkout:'Your time is temporarily held. Checkout has not been confirmed.',hold:'Checkout is still being prepared.'};
+  let text={confirmed:'Test appointment confirmed: '+when+' This was a Stripe test payment, not a real charge.',paid_pending_calendar:'Your test payment was received. Calendar setup is still pending; the appointment is not yet confirmed.',refund_pending:'This appointment could not be completed. The test payment is being refunded.',refunded:'The test payment has been refunded. This appointment is not booked.',expired:'This unpaid checkout expired. Choose a new time or email Nancy.',cancelled:'This appointment is canceled.',checkout:'Your time is temporarily held. Checkout has not been confirmed.',hold:'Checkout is still being prepared.'};
+  if(b.testMode===false){text={...text,confirmed:'Appointment confirmed: '+when,paid_pending_calendar:'Payment received. Your calendar reservation is still being finalized; it is not yet confirmed.',refund_pending:'The appointment could not be completed. Your payment is being refunded.',refunded:'Your payment has been refunded. This appointment is not booked.'};}
   message(text[b.state]||'Your booking is still being processed.');
   $('cancel-hold').hidden=!['hold','checkout'].includes(b.state);
  }
@@ -74,7 +75,8 @@
    $('test-key').required=config.testAccessRequired!==false;
    $('service-title').textContent=config.name;
    document.querySelector('[data-consultation-price]').textContent=window.consultationPrice(config);
-   $('checkout').textContent='Continue to Stripe test checkout — '+window.consultationPrice(config);
-   $('time-zone').textContent='Times are shown in '+config.timeZone+'.';$('slot-form').hidden=!config.availability;if(config.availability&&!booking)message(config.checkout?'Book a real appointment using a simulated Stripe payment. No real money will be charged.':'Check available times, then email Nancy to arrange your consultation. Online checkout is not enabled.');}catch{ /* The static email fallback remains usable without the API. */ }
+   $('checkout').textContent=(config.mode==='live'?'Continue to secure checkout — ':'Continue to Stripe test checkout — ')+window.consultationPrice(config);
+   $('payment-notice').textContent=config.mode==='live'?'Payment is required to reserve your consultation. Your appointment is confirmed after payment and calendar reservation succeed.':'Test payment only. No real charge. Use 4242 4242 4242 4242 with a future expiry and any CVC. Calendar reservations are real.';
+   $('time-zone').textContent='Times are shown in '+config.timeZone+'.';$('slot-form').hidden=!config.availability;if(config.availability&&!booking)message(config.checkout?(config.mode==='live'?'Choose an available time to book your consultation.':'Book a real appointment using a simulated Stripe payment. No real money will be charged.'):'Check available times, then email Nancy to arrange your consultation. Online checkout is not enabled.');}catch{ /* The static email fallback remains usable without the API. */ }
  })().catch(()=>message('Online booking is unavailable right now. Please email Nancy below.'));
 })();

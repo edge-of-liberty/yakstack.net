@@ -19,7 +19,7 @@ try:
             page.on('pageerror',lambda e:errors.append(str(e)))
             def route(r):
                 path=r.request.url.split(api)[-1]
-                if path=='/v1/config': data={'availability':True,'checkout':True,'testAccessRequired':width==1440,'mode':'test','durationMinutes':45,'amountMinor':12345,'currency':'usd','timeZone':'America/Chicago','name':'Configured consultation'}
+                if path=='/v1/config': data={'availability':True,'checkout':True,'testAccessRequired':width==1440,'mode':'live' if width==390 else 'test','durationMinutes':45,'amountMinor':12345,'currency':'usd','timeZone':'America/Chicago','name':'Configured consultation'}
                 elif path.startswith('/v1/availability'): data={'slots':[{'start':test_date+'T15:00:00.000Z','end':test_date+'T16:00:00.000Z'}]}
                 elif path=='/v1/bookings':
                     body=r.request.post_data_json
@@ -49,7 +49,7 @@ try:
         for width,height in [(1440,900),(768,1024),(390,844)]:
             home=browser.new_page(viewport={'width':width,'height':height})
             home.goto(url.replace('/consultation/','/'))
-            home.wait_for_function("document.querySelector('[data-consultation-price]').textContent.includes('$100')")
+            home.wait_for_function("document.querySelector('[data-consultation-price]').textContent.includes('$1')")
             assert home.get_by_role('link',name='Book a Consultation',exact=True).count()==1
             assert home.locator('h1').inner_text()=="Shaving yaks so you don't have to."
             assert home.locator('nav a').all_text_contents()==['Services','About','Contact']

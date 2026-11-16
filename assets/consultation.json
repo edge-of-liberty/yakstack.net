@@ -1,7 +1,7 @@
 {
   "name": "Initial Consultation",
   "durationMinutes": 60,
-  "amountMinor": 10000,
+  "amountMinor": 100,
   "currency": "usd",
   "paymentRequired": true,
   "business": "yakstack",
